@@ -25,3 +25,4 @@ logging:
   level:
     root: INFO
     com.titan.tune: INFO
+    com.zaxxer.hikari: INFO
