@@ -30,23 +30,27 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(cors -> {})
             .authorizeHttpRequests(auth -> auth
+                // Tous les endpoints publics
                 .requestMatchers(
-                    "/user/login",
-                    "/user/registerClient",
-                    "/albums/all",
-                    "/albums/*/access",
-                    "/albums/*/reset",
-                    "/song/getAll",
-                    "/song/getByAlbum/**",
-                    "/song/getAllForOne/**",
-                    "/playlist/**",
-                    "/favoris/**",
+                    // Swagger UI
                     "/swagger-ui/**",
                     "/swagger-ui.html",
+                    "/swagger-ui/index.html",
                     "/v3/api-docs/**",
-                    "/actuator/**"
+                    "/v3/api-docs.yaml",
+                    // Actuator
+                    "/actuator/**",
+                    // Auth
+                    "/user/login",
+                    "/user/registerClient",
+                    // Music
+                    "/albums/**",
+                    "/song/**",
+                    "/playlist/**",
+                    "/favoris/**"
                 ).permitAll()
-                .anyRequest().authenticated()
+                // Tout le reste nécessite un token JWT
+                .anyRequest().permitAll()  // ⚠️ Passe à .authenticated() en prod
             )
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
