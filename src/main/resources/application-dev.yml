@@ -1,12 +1,13 @@
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/titan_tune
-    username: titan_user
-    password: titan_password
-    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: password
   jpa:
+    hibernate.ddl-auto: validate
     show-sql: true
-
-logging:
-  level:
-    org.hibernate.SQL: DEBUG
+  flyway:
+    enabled: true
+jwt:
+  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+  expiration: 86400000

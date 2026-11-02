@@ -1,15 +1,11 @@
 package com.titan.tune.domain.repository;
+import com.titan.tune.domain.model.Favorite; import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query; import java.util.UUID;
 
-import com.titan.tune.domain.model.Favorite;
-import org.springframework.data.jpa.repository.JpaRepository;
-import java.util.List;
-import java.util.Optional;
-
-public interface FavoriteRepository extends JpaRepository<Favorite, String> {
-    List<Favorite> findByClientTrackingId(String clientTrackingId);
-    Optional<Favorite> findByClientTrackingIdAndSongTrackingId(
-        String clientTrackingId, String songTrackingId);
-    void deleteByClientTrackingIdAndSongTrackingId(
-        String clientTrackingId, String songTrackingId);
-    long countBySongTrackingId(String songTrackingId);
+public interface FavoriteRepository extends JpaRepository<Favorite, UUID> {
+    boolean existsByClientTrackingIdAndSongTrackingId(UUID clientId, UUID songId);
+    long countBySongTrackingId(UUID songId); // <--- L'incrémentation se fait ici
+    
+    @Query("SELECT f.songTrackingId FROM Favorite f GROUP BY f.songTrackingId ORDER BY COUNT(f) DESC LIMIT 1")
+    UUID findTopSongIdByLikes();
 }

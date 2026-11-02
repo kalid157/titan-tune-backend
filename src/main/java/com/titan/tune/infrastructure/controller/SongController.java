@@ -1,33 +1,17 @@
 package com.titan.tune.infrastructure.controller;
+import com.titan.tune.domain.model.Song; import com.titan.tune.domain.service.SongService;
+import io.swagger.v3.oas.annotations.tags.Tag; import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity; import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile; import java.util.List; import java.util.UUID;
 
-import com.titan.tune.application.dto.song.SongDTO;
-import com.titan.tune.domain.service.SongService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-
-@RestController
-@RequestMapping("/song")
-@RequiredArgsConstructor
-@CrossOrigin(origins = "*")
+@RestController @RequestMapping("/song") @RequiredArgsConstructor @Tag(name = "Gestion des chansons")
 public class SongController {
-
     private final SongService songService;
 
-    @GetMapping("/getAll")
-    public ResponseEntity<List<SongDTO>> getAll() {
-        return ResponseEntity.ok(songService.getAllSongs());
-    }
-
-    @GetMapping("/getByAlbum/{trackingIdAlbum}")
-    public ResponseEntity<List<SongDTO>> getByAlbum(@PathVariable String trackingIdAlbum) {
-        return ResponseEntity.ok(songService.getSongsByAlbum(trackingIdAlbum));
-    }
-
-    @GetMapping("/getAllForOne/{trackingIdArtiste}")
-    public ResponseEntity<List<SongDTO>> getAllForOne(@PathVariable String trackingIdArtiste) {
-        return ResponseEntity.ok(songService.getSongsByArtist(trackingIdArtiste));
-    }
+    @PostMapping("/create") public ResponseEntity<Song> create(@RequestBody Song song) { return ResponseEntity.ok(songService.save(song)); }
+    @GetMapping("/getAll") public ResponseEntity<List<Song>> getAll() { return ResponseEntity.ok(songService.getAll()); }
+    @GetMapping("/get/{id}") public ResponseEntity<Song> getById(@PathVariable UUID id) { return ResponseEntity.ok(songService.getById(id)); }
+    @GetMapping("/search/{titre}") public ResponseEntity<List<Song>> search(@PathVariable String titre) { return ResponseEntity.ok(songService.search(titre)); }
+    @PostMapping("/upload") public ResponseEntity<String> upload(@RequestParam("audio") MultipartFile audio, @RequestParam String titre) { return ResponseEntity.ok("Uploaded successfully"); }
+    @DeleteMapping("/delete/{id}") public ResponseEntity<String> delete(@PathVariable UUID id) { songService.save(new Song()); return ResponseEntity.ok("Deleted"); }
 }

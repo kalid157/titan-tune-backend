@@ -1,51 +1,28 @@
 package com.titan.tune.infrastructure.controller;
+import com.titan.tune.domain.model.Favorite; import com.titan.tune.domain.repository.FavoriteRepository;
+import io.swagger.v3.oas.annotations.tags.Tag; import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus; import org.springframework.http.ResponseEntity; import org.springframework.web.bind.annotation.*;
+import java.util.UUID;
 
-import com.titan.tune.domain.model.Favorite;
-import com.titan.tune.domain.repository.FavoriteRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Map;
-
-@RestController
-@RequestMapping("/favoris")
-@RequiredArgsConstructor
-@CrossOrigin(origins = "*")
+@RestController @RequestMapping("/favoris") @RequiredArgsConstructor @Tag(name = "favoris")
 public class FavoriteController {
-
     private final FavoriteRepository favoriteRepository;
 
+    // Endpoint à appeler quand on clique sur LIKE
     @PostMapping
-    public ResponseEntity<Favorite> add(@RequestBody Map<String, String> body) {
-        String clientId = body.get("ClientTrackingId");
-        String songId = body.get("SongTrackingId");
-
-        var existing = favoriteRepository
-            .findByClientTrackingIdAndSongTrackingId(clientId, songId);
-
-        if (existing.isPresent()) return ResponseEntity.ok(existing.get());
-
-        Favorite fav = Favorite.builder()
-            .clientTrackingId(clientId)
-            .songTrackingId(songId)
-            .build();
-
-        return ResponseEntity.ok(favoriteRepository.save(fav));
+    public ResponseEntity<Favorite> ajouterLike(@RequestParam UUID clientTrackingId, @RequestParam UUID songTrackingId) {
+        if (favoriteRepository.existsByClientTrackingIdAndSongTrackingId(clientTrackingId, songTrackingId)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        Favorite f = new Favorite();
+        f.setClientTrackingId(clientTrackingId);
+        f.setSongTrackingId(songTrackingId);
+        return new ResponseEntity<>(favoriteRepository.save(f), HttpStatus.CREATED);
     }
 
-    @DeleteMapping
-    public ResponseEntity<Void> remove(@RequestBody Map<String, String> body) {
-        favoriteRepository.deleteByClientTrackingIdAndSongTrackingId(
-            body.get("ClientTrackingId"), body.get("SongTrackingId"));
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/{clientTrackingId}")
-    public ResponseEntity<List<Favorite>> getUserFavorites(
-            @PathVariable String clientTrackingId) {
-        return ResponseEntity.ok(
-            favoriteRepository.findByClientTrackingId(clientTrackingId));
+    // Endpoint qui calcule le nombre de likes (like_count)
+    @GetMapping("/stats/nbrLikeForOneSong/{trackingIdSong}")
+    public ResponseEntity<Long> getLikeCount(@PathVariable UUID trackingIdSong) {
+        return ResponseEntity.ok(favoriteRepository.countBySongTrackingId(trackingIdSong));
     }
 }
