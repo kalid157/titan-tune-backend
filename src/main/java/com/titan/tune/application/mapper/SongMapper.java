@@ -6,17 +6,22 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SongMapper {
+
     public SongDTO toDTO(Song song) {
         return SongDTO.builder()
-            .trackingId(song.getTrackingId())
+            .trackingId(toStr(song.getTrackingIdSong()))
             .titre(song.getTitre())
-            .audio(song.getAudio())
+            .audio(song.getAudioUrl())
             .artiste(song.getArtiste())
-            .artisteTrackingId(song.getArtisteTrackingId())
-            .albumTrackingId(song.getAlbumTrackingId())
-            .categorieTrackingId(song.getCategorieTrackingId())
+            .artisteTrackingId(toStr(song.getArtisteTrackingId()))
+            .albumTrackingId(toStr(song.getAlbumTrackingId()))
+            .categorieTrackingId(toStr(song.getCategorieTrackingId()))
             .durationSeconds(song.getDurationSeconds())
             .isVip(song.getIsVip())
             .build();
+    }
+
+    private String toStr(java.util.UUID id) {
+        return id == null ? null : id.toString();
     }
 }

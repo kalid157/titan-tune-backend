@@ -24,7 +24,7 @@ public class AlbumMapper {
         }
 
         return AlbumDTO.builder()
-            .trackingId(album.getTrackingId())
+            .trackingId(album.getId().toString())
             .titreAlbum(album.getTitreAlbum())
             .nomArtiste(album.getNomArtiste())
             .imageAlbum(album.getImageAlbum())

@@ -1,8 +1,25 @@
 package com.titan.tune.domain.model;
-import jakarta.persistence.*; import lombok.Data; import java.util.UUID;
 
-@Entity @Data @Table(name="albums")
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.UUID;
+
+@Entity
+@Table(name = "albums")
+@Getter
+@Setter
 public class Album {
-    @Id @GeneratedValue(strategy = GenerationType.UUID) private UUID trackingId;
-    private String titre; private String imageUrl; private UUID artisteTrackingId;
+
+    @Id
+    @GeneratedValue
+    private UUID id;
+
+    private String titreAlbum;
+    private String nomArtiste;
+    private String imageAlbum;
+
+    private Boolean isVip;
+    private Boolean isFree;
 }
